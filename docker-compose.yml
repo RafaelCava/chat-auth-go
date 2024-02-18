@@ -1,0 +1,112 @@
+version: "3.8"
+
+networks:
+  chat-auth:
+    external: true
+  kong-fc:
+    external: true
+  observability:
+    external: true
+      
+services:
+  postgres:
+    image: postgres
+    restart: always
+    container_name: postgres-chat-auth
+    volumes:
+      - ./tmp/database/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: chat-auth
+    ports:
+      - 5432:5432
+    networks:
+      - chat-auth
+      - observability
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    extra_hosts:
+      - host.docker.internal:host-gateway
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo-chat-auth
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "'db.runCommand('ping').ok'", "--quiet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chat-auth
+      - observability
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: chat-auth
+      MONGO_INITDB_ROOT_PASSWORD: chat-auth
+    volumes:
+      - ./tmp/database/mongo:/data/db
+    extra_hosts:
+      - host.docker.internal:host-gateway
+  redis:
+    image: redis
+    restart: always
+    command: ["redis-server", "--requirepass", "chat-auth"]
+    ports:
+      - 6379:6379
+    container_name: redis-chat-auth
+    networks:
+      - chat-auth
+      - observability
+    volumes:
+      - ./tmp/database/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "-a", "chat-auth", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    extra_hosts:
+      - host.docker.internal:host-gateway
+  chat-auth-api:
+    build:
+      context: .
+      dockerfile: ./.docker/dockerfiles/Dockerfile
+    entrypoint: ["sh", "./.docker/entrypoints/entrypoint-dev.sh"]
+    container_name: chat-auth-api
+    restart: always
+    volumes:
+      - .:/usr/chat-auth-api/app
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 20s
+      timeout: 20s
+      retries: 3
+      start_period: 5s
+    environment:
+      DB_RD_HOST: host.docker.internal
+      DB_RD_PORT: 6379
+      DB_RD_PASSWORD: chat-auth
+      DB_PG_HOST: host.docker.internal
+      DB_PG_PORT: 5432
+      DB_PG_USER: postgres
+      DB_PG_NAME: postgres
+      DB_PG_PASSWORD: postgres
+      MONGO_URI: "mongodb://chat-auth:chat-auth@host.docker.internal:27017/chat-auth?authSource=admin"
+      PORT: 3000
+      SECRET_TOKEN: QheJ9sifRIk6EvwR1Ark4Zs1BMKfTQGR
+      ISS_TOKEN: 7MQKSn4k2KIQchf72igel14jlSJKm5Fs
+      ELASTIC_APM_SERVICE_NAME: chat-auth-api
+      ELASTIC_APM_SERVER_URL: http://apm:8200
+    ports:
+      - 3000:3000
+    networks:
+      - chat-auth
+      - kong-fc
+      - observability
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - postgres
+      - mongo

@@ -1,0 +1,11 @@
+FROM golang:1.21 AS builder
+
+WORKDIR /usr/chat-auth-api/app
+
+RUN go install github.com/cosmtrek/air@latest
+RUN go install gotest.tools/gotestsum@latest
+RUN apt-get install -y git curl
+
+EXPOSE 3000
+
+CMD [ "tail", "-f", "/dev/null" ]

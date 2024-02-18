@@ -1,0 +1,19 @@
+FROM golang:1.21 as base
+
+FROM base as builder
+
+WORKDIR /app
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o server ./main
+
+FROM scratch as production
+
+WORKDIR /app
+
+COPY --from=builder /app/server .
+ENV GIN_MODE=release
+
+EXPOSE 3000
+
+CMD ["./server"]
