@@ -58,6 +58,9 @@ func main() {
 
 	fmt.Println("Stopping server...")
 
+	if err := routes.ShutDown(ctx); err != nil {
+		panic(err)
+	}
 	if err := factories.NewCloseDatabasePostgresConnection(); err != nil {
 		panic(err)
 	}
@@ -65,9 +68,6 @@ func main() {
 		panic(err)
 	}
 	if err := factories.NewCloseDatabaseRedisConnection(); err != nil {
-		panic(err)
-	}
-	if err := routes.ShutDown(ctx); err != nil {
 		panic(err)
 	}
 
