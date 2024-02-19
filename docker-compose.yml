@@ -110,3 +110,4 @@ services:
     depends_on:
       - postgres
       - mongo
+      - redis
