@@ -20,13 +20,17 @@ func NewCreateUserController(createUserUseCase usecases.CreateUserUseCase) proto
 func (controller *CreateUserController) Handle(ctx *gin.Context) error {
 	var params usecases.CreateUserParams
 	ctx.BindJSON(&params)
+	if err := params.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
 	resultChannel := make(chan protocols.HttpResponse, 1)
 	var wg sync.WaitGroup
 	go func() {
 		defer wg.Done()
 		user, err := controller.createUserUseCase.Execute(params)
 		if err != nil {
-			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusInternalServerError, Body: err}
+			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusBadRequest, Body: err.Error()}
 		} else {
 			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusCreated, Body: user}
 		}
