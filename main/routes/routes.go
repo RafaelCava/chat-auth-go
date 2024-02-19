@@ -37,7 +37,7 @@ func getRoutes() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 	addUserRoutes(apiPrefix)
+	addAuthRoutes(apiPrefix)
 	// addDocsRoutes(apiPrefix)
 	// addHealthCheckRoutes(apiPrefix)
-	// addAuthRoutes(apiPrefix)
 }

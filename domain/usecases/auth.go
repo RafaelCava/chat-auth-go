@@ -6,8 +6,8 @@ import (
 )
 
 type AuthRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Email    string `json:"email" valid:"required,email"`
+	Password string `json:"password" valid:"required"`
 }
 
 type AuthUseCase interface {
@@ -20,6 +20,5 @@ func (authRequest *AuthRequest) Validate() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

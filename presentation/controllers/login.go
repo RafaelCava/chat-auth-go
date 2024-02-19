@@ -25,6 +25,7 @@ func (controller *LoginController) Handle(ctx *gin.Context) error {
 		ctx.JSON(http.StatusConflict, gin.H{
 			"error": err.Error(),
 		})
+		return err
 	}
 	resultChannel := make(chan protocols.HttpResponse, 1)
 	var wg sync.WaitGroup
@@ -32,7 +33,7 @@ func (controller *LoginController) Handle(ctx *gin.Context) error {
 		defer wg.Done()
 		tokenPair, err := controller.authUseCase.Execute(request)
 		if err != nil {
-			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusBadRequest, Body: err.Error()}
+			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusForbidden, Body: "invalid credentials"}
 		} else {
 			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusOK, Body: tokenPair}
 		}
