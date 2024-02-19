@@ -10,11 +10,11 @@ import (
 type User struct {
 	ID        string    `json:"id" valid:"uuid" gorm:"type:uuid;primary_key;"`
 	Username  string    `json:"username" gorm:"size:50" valid:"stringlength(5|50),optional"`
-	Password  string    `json:"password" valid:"required" gorm:"not null;"`
+	Password  string    `json:"password,omitempty" valid:"required" gorm:"not null;"`
 	Email     string    `json:"email" valid:"email,required" gorm:"unique;not null;size:100;"`
-	Logo      string    `json:"logo" valid:"url,optional"`
-	CreatedAt time.Time `json:"created_at" gorm:"index" valid:"-"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"index" valid:"-"`
+	Logo      string    `json:"logo,omitempty" valid:"url,optional"`
+	CreatedAt time.Time `json:"created_at,omitempty" gorm:"index" valid:"-"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" gorm:"index" valid:"-"`
 }
 
 func NewUser(username, password, email, logo string) (*User, error) {
