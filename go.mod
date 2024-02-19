@@ -3,9 +3,11 @@ module github.com/RafaelCava/chat-auth-go
 go 1.21.5
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/satori/go.uuid v1.2.0
 	go.elastic.co/apm/module/apmgin/v2 v2.4.8
 	go.mongodb.org/mongo-driver v1.14.0
 	gorm.io/driver/postgres v1.5.6

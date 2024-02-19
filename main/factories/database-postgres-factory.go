@@ -20,7 +20,7 @@ func NewDatabasePostgresOpenConnection() error {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=America/Sao_Paulo", host, user, pass, dbname, port)
 	con, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	db_postgres_con = con
-	// newMigrateModels()
+	newMigratePostgresModels()
 	return err
 }
 
