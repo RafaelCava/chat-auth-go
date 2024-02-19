@@ -14,9 +14,7 @@ type LoginController struct {
 }
 
 func NewLoginController(authUseCase usecases.AuthUseCase) protocols.Controller {
-	return &LoginController{
-		authUseCase: authUseCase,
-	}
+	return &LoginController{authUseCase}
 }
 
 func (controller *LoginController) Handle(ctx *gin.Context) error {
