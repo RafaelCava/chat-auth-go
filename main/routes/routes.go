@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/RafaelCava/chat-auth-go/main/factories"
 	"github.com/gin-gonic/gin"
 	"go.elastic.co/apm/module/apmgin/v2"
 )
@@ -31,10 +32,10 @@ func ShutDown(ctx context.Context) error {
 func getRoutes() {
 	apiPrefix := router.Group("/api")
 	apiPrefix.Use(apmgin.Middleware(router))
+	apiPrefix.Use(factories.NewCorsMiddleware())
 	apiPrefix.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
-	// apiPrefix.Use(middlewares.NewCorsMiddleware())
 	// addDocsRoutes(apiPrefix)
 	// addHealthCheckRoutes(apiPrefix)
 	// addAuthRoutes(apiPrefix)
