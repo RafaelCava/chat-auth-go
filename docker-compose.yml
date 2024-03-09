@@ -50,25 +50,26 @@ services:
       - ./tmp/database/mongo:/data/db
     extra_hosts:
       - host.docker.internal:host-gateway
-  redis:
-    image: redis
-    restart: always
-    command: ["redis-server", "--requirepass", "chat-auth"]
-    ports:
-      - 6379:6379
-    container_name: redis-chat-auth
-    networks:
-      - chat-auth
-      - observability
-    volumes:
-      - ./tmp/database/redis:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "-a", "chat-auth", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    extra_hosts:
-      - host.docker.internal:host-gateway
+  # redis:
+  #   image: redis
+  #   restart: always
+  #   command: ["redis-server", "--requirepass", "chat-auth"]
+  #   ports:
+  #     - 6379:6379
+  #   container_name: redis-chat-auth
+  #   networks:
+  #     - chat-auth
+  #     - observability
+  #   volumes:
+  #     - ./tmp/database/redis:/data
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "-a", "chat-auth", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  #   extra_hosts:
+  #     - host.docker.internal:host-gateway
+  
   chat-auth-api:
     build:
       context: .
@@ -92,7 +93,7 @@ services:
       DB_PG_PORT: 5432
       DB_PG_USER: postgres
       DB_PG_NAME: postgres
-      DB_PG_PASSWORD: postgres
+      DB_PG_PASSWORD: chat-auth
       MONGO_URI: "mongodb://chat-auth:chat-auth@host.docker.internal:27017/chat-auth?authSource=admin"
       PORT: 3000
       SECRET_TOKEN: QheJ9sifRIk6EvwR1Ark4Zs1BMKfTQGR
@@ -110,4 +111,4 @@ services:
     depends_on:
       - postgres
       - mongo
-      - redis
+      # - redis

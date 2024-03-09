@@ -39,10 +39,10 @@ func main() {
 		if errMongoCon != nil {
 			panic("Falha ao conectar ao banco de dados - MongoDB")
 		}
-		errRedisCon := factories.NewDatabaseRedisOpenConnection()
-		if errRedisCon != nil {
-			panic("Falha ao conectar ao banco de dados - Redis")
-		}
+		// errRedisCon := factories.NewDatabaseRedisOpenConnection()
+		// if errRedisCon != nil {
+		// 	panic("Falha ao conectar ao banco de dados - Redis")
+		// }
 		if err := routes.Run(); err != nil && err != http.ErrServerClosed {
 			panic(err)
 		}
@@ -67,9 +67,9 @@ func main() {
 	if err := factories.NewCloseDatabaseMongoConnection(); err != nil {
 		panic(err)
 	}
-	if err := factories.NewCloseDatabaseRedisConnection(); err != nil {
-		panic(err)
-	}
+	// if err := factories.NewCloseDatabaseRedisConnection(); err != nil {
+	// 	panic(err)
+	// }
 
 	fmt.Println("Server stopped successfully!")
 }
