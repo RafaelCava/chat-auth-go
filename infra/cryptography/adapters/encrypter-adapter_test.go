@@ -43,6 +43,7 @@ func TestEncrypterAdapterDecryptErrorTime(t *testing.T) {
 	claims, err := sut.Decrypt(token)
 	assert.Nil(t, claims)
 	assert.Error(t, err)
+	assert.Equal(t, "token is expired by 1s", err.Error())
 }
 
 func TestEncrypterAdapterDecryptErrorIssuer(t *testing.T) {
@@ -55,6 +56,7 @@ func TestEncrypterAdapterDecryptErrorIssuer(t *testing.T) {
 	claims, err := sut.Decrypt(tokenFake)
 	assert.Nil(t, claims)
 	assert.Error(t, err)
+	assert.Equal(t, "invalid token", err.Error())
 }
 
 func TestEncrypterAdapterDecryptErrorAssign(t *testing.T) {
@@ -62,6 +64,7 @@ func TestEncrypterAdapterDecryptErrorAssign(t *testing.T) {
 	claims, err := sut.Decrypt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
 	assert.Nil(t, claims)
 	assert.Error(t, err)
+	assert.Equal(t, "signature is invalid", err.Error())
 }
 
 func TestEncrypterAdapterDecryptErrorClaimsConversion(t *testing.T) {
@@ -69,4 +72,5 @@ func TestEncrypterAdapterDecryptErrorClaimsConversion(t *testing.T) {
 	claims, err := sut.Decrypt("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.JOxTQsNDINOUToIgWdZYQWXG0T2zp8ItXNzO9mvfPqs")
 	assert.Nil(t, claims)
 	assert.Error(t, err)
+	assert.Equal(t, "expired credential", err.Error())
 }

@@ -19,8 +19,12 @@ func NewLoginController(authUseCase usecases.AuthUseCase) protocols.Controller {
 
 func (controller *LoginController) Handle(ctx *gin.Context) error {
 	var request usecases.AuthRequest
-	ctx.BindJSON(&request)
-
+	err := ctx.BindJSON(&request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
 	if err := request.Validate(); err != nil {
 		ctx.JSON(http.StatusConflict, gin.H{
 			"error": err.Error(),
@@ -33,7 +37,7 @@ func (controller *LoginController) Handle(ctx *gin.Context) error {
 		defer wg.Done()
 		tokenPair, err := controller.authUseCase.Execute(request)
 		if err != nil {
-			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusForbidden, Body: "invalid credentials"}
+			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusUnauthorized, Body: "invalid credentials"}
 		} else {
 			resultChannel <- protocols.HttpResponse{StatusCode: http.StatusOK, Body: tokenPair}
 		}
