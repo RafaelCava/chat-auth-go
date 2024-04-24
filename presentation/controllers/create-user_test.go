@@ -15,15 +15,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type OptionsSpy struct {
+	count       int
+	returnError bool
+	returnNil   bool
+}
+
 type CreateUserUseCaseSpy struct {
-	options map[string]interface{}
+	options OptionsSpy
 }
 
 func (spy *CreateUserUseCaseSpy) Execute(params usecases.CreateUserParams) (*models.User, error) {
-	if spy.options["error"] == true {
+	spy.options.count = spy.options.count + 1
+	if spy.options.returnError == true {
 		return nil, errors.New("error")
 	}
-	if spy.options["returnNil"] == true {
+	if spy.options.returnNil == true {
 		return nil, nil
 	}
 	return &models.User{
@@ -37,9 +44,8 @@ func (spy *CreateUserUseCaseSpy) Execute(params usecases.CreateUserParams) (*mod
 }
 func TestCreateUserController(t *testing.T) {
 	t.Run("should return 400 if invalid body is provided", func(t *testing.T) {
-		sut := controllers.NewCreateUserController(&CreateUserUseCaseSpy{
-			options: map[string]interface{}{},
-		})
+		spy := CreateUserUseCaseSpy{}
+		sut := controllers.NewCreateUserController(&spy)
 		router := gin.Default()
 		router.POST("/users", func(ctx *gin.Context) {
 			sut.Handle(ctx)
@@ -52,12 +58,12 @@ func TestCreateUserController(t *testing.T) {
 
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, 0, spy.options.count)
 	})
 
 	t.Run("should return 400 if Validate returns an error", func(t *testing.T) {
-		sut := controllers.NewCreateUserController(&CreateUserUseCaseSpy{
-			options: map[string]interface{}{},
-		})
+		spy := CreateUserUseCaseSpy{}
+		sut := controllers.NewCreateUserController(&spy)
 
 		router := gin.Default()
 		router.POST("/users", func(ctx *gin.Context) {
@@ -71,12 +77,16 @@ func TestCreateUserController(t *testing.T) {
 
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, 0, spy.options.count)
 	})
 
 	t.Run("should return 400 if CreateUserUseCase returns an error", func(t *testing.T) {
-		sut := controllers.NewCreateUserController(&CreateUserUseCaseSpy{
-			options: map[string]interface{}{"error": true},
-		})
+		spy := CreateUserUseCaseSpy{
+			options: OptionsSpy{
+				returnError: true,
+			},
+		}
+		sut := controllers.NewCreateUserController(&spy)
 
 		router := gin.Default()
 		router.POST("/users", func(ctx *gin.Context) {
@@ -91,12 +101,12 @@ func TestCreateUserController(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Equal(t, 1, spy.options.count)
 	})
 
 	t.Run("should return 201 if CreateUserUseCase returns a user", func(t *testing.T) {
-		sut := controllers.NewCreateUserController(&CreateUserUseCaseSpy{
-			options: map[string]interface{}{},
-		})
+		spy := CreateUserUseCaseSpy{}
+		sut := controllers.NewCreateUserController(&spy)
 
 		router := gin.Default()
 		router.POST("/users", func(ctx *gin.Context) {
@@ -111,5 +121,6 @@ func TestCreateUserController(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
+		assert.Equal(t, 1, spy.options.count)
 	})
 }
