@@ -70,6 +70,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/rooms": {
+            "post": {
+                "description": "Create a new room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Create a new room",
+                "parameters": [
+                    {
+                        "description": "Data to create one room",
+                        "name": "CreateRoomParams",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/usecases.CreateRoomParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Room",
+                        "schema": {
+                            "$ref": "#/definitions/models.Room"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/protocols.HttpResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/protocols.HttpResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/protocols.HttpResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Create a new user",
@@ -123,6 +174,35 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Room": {
+            "type": "object",
+            "properties": {
+                "active_users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "owner_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.TokenPair": {
             "type": "object",
             "properties": {
@@ -177,6 +257,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "usecases.CreateRoomParams": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "ownerId": {
                     "type": "string"
                 }
             }

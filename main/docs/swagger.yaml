@@ -1,5 +1,24 @@
 basePath: /api
 definitions:
+  models.Room:
+    properties:
+      active_users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/models.User'
+      owner_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.TokenPair:
     properties:
       access_token:
@@ -36,6 +55,13 @@ definitions:
       email:
         type: string
       password:
+        type: string
+    type: object
+  usecases.CreateRoomParams:
+    properties:
+      name:
+        type: string
+      ownerId:
         type: string
     type: object
   usecases.CreateUserParams:
@@ -92,6 +118,39 @@ paths:
       summary: Authenticate a user
       tags:
       - Auth
+  /rooms:
+    post:
+      consumes:
+      - application/json
+      description: Create a new room
+      parameters:
+      - description: Data to create one room
+        in: body
+        name: CreateRoomParams
+        schema:
+          $ref: '#/definitions/usecases.CreateRoomParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Room
+          schema:
+            $ref: '#/definitions/models.Room'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+      summary: Create a new room
+      tags:
+      - Room
   /users:
     post:
       consumes:

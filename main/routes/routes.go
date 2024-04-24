@@ -39,5 +39,6 @@ func getRoutes() {
 	})
 	addUserRoutes(apiPrefix)
 	addAuthRoutes(apiPrefix)
+	addRoomsRoutes(apiPrefix)
 	// addHealthCheckRoutes(apiPrefix)
 }
