@@ -33,11 +33,11 @@ func getRoutes() {
 	apiPrefix := router.Group("/api")
 	apiPrefix.Use(apmgin.Middleware(router))
 	apiPrefix.Use(factories.NewCorsMiddleware())
+	addDocsRoutes(apiPrefix)
 	apiPrefix.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 	addUserRoutes(apiPrefix)
 	addAuthRoutes(apiPrefix)
-	// addDocsRoutes(apiPrefix)
 	// addHealthCheckRoutes(apiPrefix)
 }

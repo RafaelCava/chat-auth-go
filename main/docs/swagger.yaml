@@ -1,0 +1,134 @@
+basePath: /api
+definitions:
+  models.TokenPair:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      logo:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  protocols.HttpResponse:
+    properties:
+      body: {}
+      statusCode:
+        example: 200
+        type: integer
+    type: object
+  usecases.AuthRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  usecases.CreateUserParams:
+    properties:
+      email:
+        type: string
+      logo:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: rafael.software-developer@outlook.com
+    name: Rafael Cavalcante
+    url: https://github.com/RafaelCava
+  description: API para gerenciamento de chats, grupos e autenticação de usuários
+  title: Chat Auth Api
+  version: 0.0.1
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user
+      parameters:
+      - description: Data to authenticate one user
+        in: body
+        name: AuthRequest
+        schema:
+          $ref: '#/definitions/usecases.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: TokenPair
+          schema:
+            $ref: '#/definitions/models.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+      summary: Authenticate a user
+      tags:
+      - Auth
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: Data to create one user
+        in: body
+        name: CreateUserParams
+        schema:
+          $ref: '#/definitions/usecases.CreateUserParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/protocols.HttpResponse'
+      summary: Create a new user
+      tags:
+      - User
+securityDefinitions:
+  Bearer:
+    description: Authorization header using the Bearer scheme.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -10,6 +10,18 @@ import (
 	"github.com/RafaelCava/chat-auth-go/presentation/protocols"
 )
 
+// AuthLogin     godoc
+// @Summary      Authenticate a user
+// @Description  Authenticate a user
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        AuthRequest  body usecases.AuthRequest false "Data to authenticate one user"
+// @Success      201  {object}  models.TokenPair "TokenPair"
+// @Failure      400  {object}  protocols.HttpResponse "Bad Request"
+// @Failure      404  {object}  protocols.HttpResponse "Not Found"
+// @Failure      500  {object}  protocols.HttpResponse "Internal Server Error"
+// @Router       /auth/login [post]
 func NewLoginControllerFactory() protocols.Controller {
 	secretKey := os.Getenv("SECRET_TOKEN")
 	issuerKey := os.Getenv("ISS_TOKEN")
