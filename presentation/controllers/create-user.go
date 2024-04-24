@@ -19,7 +19,11 @@ func NewCreateUserController(createUserUseCase usecases.CreateUserUseCase) proto
 
 func (controller *CreateUserController) Handle(ctx *gin.Context) error {
 	var params usecases.CreateUserParams
-	ctx.BindJSON(&params)
+	err := ctx.BindJSON(&params)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
 	if err := params.Validate(); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return err
